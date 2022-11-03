@@ -1,10 +1,13 @@
 package cn.wolfcode.service;
 
+import cn.wolfcode.domain.LoginUser;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 /**
  * @author wby
@@ -21,9 +24,11 @@ public class UserServiceImpl implements UserDetailsService {
         String xiaoliu = "xiaoliu";
 
         if (admin.equals(username)) {
-            return User.withUsername(admin).password("{noop}123456").authorities("admin", "ROLE_hr").build();
+//            return User.withUsername(admin).password("{noop}123456").authorities("admin", "ROLE_hr").build();
+          return new LoginUser(username,"{noop}123", Arrays.asList("admin", "ROLE_hr"));
         } else if (xiaoliu.equals(username)) {
-            return User.withUsername(admin).password("{noop}123456").authorities("ROLE_hr", "dept").build();
+//            return User.withUsername(admin).password("{noop}123456").authorities("ROLE_hr", "dept").build();
+            return new LoginUser(username,"{noop}123", Arrays.asList("ROLE_hr", "dept"));
         }
         throw new UsernameNotFoundException("用户不存在");
     }
