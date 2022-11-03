@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 /**
  * @author wby
@@ -34,8 +35,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         //CSRF 防护
-        http.csrf().disable();
-        // HttpSecurity: Security 过滤器链的构造对象，几乎大部分的配置都是在这完成的
+        //http.csrf().disable();
+        // HttpSecurity: Security 过滤器链的构造对象,大部分在此完成
+        //http.csrf().ignoringAntMatchers("/login.jsp");
         // 访问控制
         http.authorizeRequests()
                 // 匿名时访问，已经登录了就不能访问了
@@ -61,5 +63,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.rememberMe()
                 .tokenValiditySeconds(60 * 60 * 24)
                 .userDetailsService(userService);
+
+        // 登出配置
+        http.logout().logoutUrl("/logout").logoutSuccessUrl("/login.jsp");
     }
 }

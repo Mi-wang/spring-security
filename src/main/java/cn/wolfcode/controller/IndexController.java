@@ -1,5 +1,7 @@
 package cn.wolfcode.controller;
 
+import cn.wolfcode.utils.SecurityUtils;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +15,9 @@ public class IndexController {
 
     @GetMapping
     public String hello() {
-        return "<h1>系统首页</h1>";
+        UserDetails loginUser = SecurityUtils.getLoginUser();
+        String username = loginUser.getUsername();
+
+        return String.format("<h1>系统首页: %s</h1>", username);
     }
 }
