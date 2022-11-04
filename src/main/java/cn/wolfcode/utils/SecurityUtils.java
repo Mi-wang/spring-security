@@ -41,4 +41,7 @@ public class SecurityUtils {
     public static String encryptPassword(String password) {
         return new BCryptPasswordEncoder().encode(password);
     }
+    public static void setAuthentication(Authentication authentication) {
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
 }

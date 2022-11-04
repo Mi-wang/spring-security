@@ -4,6 +4,7 @@ import cn.wolfcode.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -32,6 +33,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private AuthenticationEntryPoint unauthenticatedEntryPoint;
 
     @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+    @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
@@ -52,7 +59,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().authenticated();
 
         // 1. 配置登录页面 => 表单请求
-        http.formLogin()
+       /* http.formLogin()
                 // 配置登录页面
                 .loginPage("/login.jsp")
                 // 提交登录表单时 进行的接口
@@ -61,7 +68,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .defaultSuccessUrl("/")
                 .usernameParameter("name")
                 .passwordParameter("pass");
-
+*/
         http.rememberMe()
                 .tokenValiditySeconds(60 * 60 * 24)
                 .userDetailsService(userService);
