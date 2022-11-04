@@ -1,5 +1,6 @@
 package cn.wolfcode.config;
 
+import cn.wolfcode.security.handler.LogoutSuccessJsonHandler;
 import cn.wolfcode.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +10,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * @author wby
@@ -26,8 +30,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private UserServiceImpl userService;
 
+    @Autowired
+    private LogoutSuccessJsonHandler logoutSuccessHandler;
+
+    @Autowired
+    private AuthenticationEntryPoint unauthenticatedEntryPoint;
+
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -35,7 +45,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
 
         //CSRF 防护
-        //http.csrf().disable();
+        http.csrf().disable();
         // HttpSecurity: Security 过滤器链的构造对象,大部分在此完成
         //http.csrf().ignoringAntMatchers("/login.jsp");
         // 访问控制
@@ -65,6 +75,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .userDetailsService(userService);
 
         // 登出配置
-        http.logout().logoutUrl("/logout").logoutSuccessUrl("/login.jsp");
+
+        http.logout().logoutUrl("/logout").logoutSuccessHandler(logoutSuccessHandler);
+        /*http.logout(logout->{
+            logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                    .logoutSuccessUrl("/login.jsp");
+        });*/
+
+        http.exceptionHandling().authenticationEntryPoint(unauthenticatedEntryPoint);
+
     }
 }
