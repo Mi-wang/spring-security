@@ -8,9 +8,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
@@ -36,6 +38,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthenticationEntryPoint unauthenticatedEntryPoint;
+    @Autowired
+
+    private AccessDeniedHandler unauthenticatedHandler;
 
     @Bean
     @Override
@@ -58,7 +63,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 访问控制
         http.authorizeRequests()
                 // 匿名时访问，已经登录了就不能访问了
-                .antMatchers("/login.jsp", "/login").anonymous()
+                .antMatchers("/login.jsp", "/login").permitAll()
+                // 要求必须拥有 hr 权限才能访问 并且再进行角色判断时，会自动向当前权限加上ROLE_
+                //.antMatchers("/employees/**").hasRole("hr")
+                // 要求必须拥有 admin | dept 角色才可以访问
+                //.antMatchers("/departments/**").hasAnyAuthority("admin","dept")
                 // 对匹配的资源直接放行
                 .antMatchers("/static/**").permitAll()
                 .anyRequest().authenticated();
@@ -86,7 +95,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .logoutSuccessUrl("/login.jsp");
         });*/
         // 异常过滤器配置
-        http.exceptionHandling().authenticationEntryPoint(unauthenticatedEntryPoint);
+        http.exceptionHandling()
+                .accessDeniedHandler(unauthenticatedHandler)
+                .authenticationEntryPoint(unauthenticatedEntryPoint);
 
 
         //将自定义的过滤器添加到用户认证过滤器之前
