@@ -1,5 +1,6 @@
 package cn.wolfcode.config;
 
+import cn.wolfcode.filter.VerifyTokenFilter;
 import cn.wolfcode.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +11,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
 /**
@@ -28,6 +30,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private LogoutSuccessHandler logoutSuccessHandler;
+
+    @Autowired
+    private VerifyTokenFilter verifyTokenFilter;
 
     @Autowired
     private AuthenticationEntryPoint unauthenticatedEntryPoint;
@@ -80,8 +85,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             logout.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                     .logoutSuccessUrl("/login.jsp");
         });*/
-
+        // 异常过滤器配置
         http.exceptionHandling().authenticationEntryPoint(unauthenticatedEntryPoint);
 
+
+        //将自定义的过滤器添加到用户认证过滤器之前
+        http.addFilterBefore(verifyTokenFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }

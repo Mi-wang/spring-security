@@ -1,7 +1,9 @@
 package cn.wolfcode.security.handler;
 
+import cn.wolfcode.domain.LoginUser;
 import cn.wolfcode.utils.JsonUtils;
 import cn.wolfcode.utils.ServletUtils;
+import cn.wolfcode.utils.TokenUtils;
 import cn.wolfcode.vo.JsonResult;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
@@ -27,6 +29,13 @@ public class LogoutSuccessJsonHandler implements LogoutSuccessHandler {
                                 HttpServletResponse response,
                                 Authentication authentication)
             throws IOException, ServletException {
+
+        LoginUser user = (LoginUser)authentication.getPrincipal();
+
+        // 清楚map 中的用户数据
+        TokenUtils.remove(user.getToken());
+
+        // 返回 Json 字符串
         String json = JsonUtils.toJson(JsonResult.success().entrySet());
         ServletUtils.renderString(response, json);
     }
