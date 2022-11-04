@@ -5,7 +5,9 @@ import cn.wolfcode.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.parameters.P;
@@ -25,6 +27,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
  * 2. configure(HttpSecurity http) 来对 Security 进行配置
  */
 @Configuration
+/**@EnableGlobalMethodSecurity  启用全局方法安全性*/
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -64,10 +67,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 // 匿名时访问，已经登录了就不能访问了
                 .antMatchers("/login.jsp", "/login").permitAll()
-                // 要求必须拥有 hr 权限才能访问 并且再进行角色判断时，会自动向当前权限加上ROLE_
-                //.antMatchers("/employees/**").hasRole("hr")
+                .antMatchers("/employees/delete").hasRole("admin")
+                // 要求必须拥有 hr 权限才能访问 并且再进行角色判断时，会自动向当前权限加上ROLE_           access("hasRole('hr')")
+                .antMatchers("/employees/**").hasRole("hr")
                 // 要求必须拥有 admin | dept 角色才可以访问
-                //.antMatchers("/departments/**").hasAnyAuthority("admin","dept")
+                .antMatchers("/departments/**").hasAnyAuthority("admin", "dept")
                 // 对匹配的资源直接放行
                 .antMatchers("/static/**").permitAll()
                 .anyRequest().authenticated();
