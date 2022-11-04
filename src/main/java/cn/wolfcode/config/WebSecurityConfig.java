@@ -1,19 +1,15 @@
 package cn.wolfcode.config;
 
-import cn.wolfcode.security.handler.LogoutSuccessJsonHandler;
 import cn.wolfcode.service.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * @author wby
@@ -24,14 +20,13 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
  * 2. configure(HttpSecurity http) 来对 Security 进行配置
  */
 @Configuration
-@EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserServiceImpl userService;
 
     @Autowired
-    private LogoutSuccessJsonHandler logoutSuccessHandler;
+    private LogoutSuccessHandler logoutSuccessHandler;
 
     @Autowired
     private AuthenticationEntryPoint unauthenticatedEntryPoint;
@@ -51,13 +46,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         // 访问控制
         http.authorizeRequests()
                 // 匿名时访问，已经登录了就不能访问了
-                .antMatchers("/login.jsp", "/login")
-                .anonymous()
+                .antMatchers("/login.jsp", "/login").anonymous()
                 // 对匹配的资源直接放行
-                .antMatchers("/static/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated();
+                .antMatchers("/static/**").permitAll()
+                .anyRequest().authenticated();
 
         // 1. 配置登录页面 => 表单请求
         http.formLogin()

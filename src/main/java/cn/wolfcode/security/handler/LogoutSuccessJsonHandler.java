@@ -1,6 +1,7 @@
 package cn.wolfcode.security.handler;
 
 import cn.wolfcode.utils.JsonUtils;
+import cn.wolfcode.utils.ServletUtils;
 import cn.wolfcode.vo.JsonResult;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
@@ -26,7 +27,7 @@ public class LogoutSuccessJsonHandler implements LogoutSuccessHandler {
                                 HttpServletResponse response,
                                 Authentication authentication)
             throws IOException, ServletException {
-        JsonUtils.toJson(JsonResult.success().entrySet());
-
+        String json = JsonUtils.toJson(JsonResult.success().entrySet());
+        ServletUtils.renderString(response, json);
     }
 }
