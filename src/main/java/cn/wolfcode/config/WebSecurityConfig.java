@@ -28,6 +28,7 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
  */
 @Configuration
 /**@EnableGlobalMethodSecurity  启用全局方法安全性*/
+@EnableGlobalMethodSecurity(prePostEnabled = true,securedEnabled = true,jsr250Enabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
@@ -74,6 +75,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/departments/**").hasAnyAuthority("admin", "dept")
                 // 对匹配的资源直接放行
                 .antMatchers("/static/**").permitAll()
+                // 所有请求都通过验证
                 .anyRequest().authenticated();
 
         // 1. 配置登录页面 => 表单请求
